@@ -34,15 +34,66 @@ GetPuzzle.onclick = function () {
 		board = response.board
 		FillBoard(board)
 	}
-	xhrRequest.open('get', 'https://sugoku.herokuapp.com/board?difficulty=easy')
-	//we can change the difficulty of the puzzle the allowed values of difficulty are easy, medium, hard and random
+	xhrRequest.open('get', 'https://sugoku.onrender.com/board?difficulty=hard')
+	
 	xhrRequest.send()
 }
 
 SolvePuzzle.onclick = () => {
-	SudokuSolver(board, 0, 0, 9);
+	sudukoSolver(board, 0, 0, 9);
 };
 
-function SudokuSolver(board, i, j, n) {
-	// Write your Code here
-}
+function isSafe(board,row,col,val,n) {
+	for (let i = 0; i<n; i++) {
+	  // row check
+	  if (board[row][i] == val || board[i][col]==val)
+		return false;
+	
+	}
+	
+	let rn=Math.sqrt(n);
+	let si= row-row%rn;
+	let sj= col-col%rn;
+	for(let x=si; x<si+rn; x++){
+		for(let y=sj; y<sj+rn; y++){
+			if(board==val){
+				return false;
+			}
+		}
+	}
+	return true;
+  }
+
+function sudukoSolver(board,row,col,n) {
+	// base case
+	if (row == n) {
+	  //print(board, n);
+	  FillBoard(board)
+	  return true;
+	}
+	// if we at last col
+	if (col == n) {
+	  return sudukoSolver(board, row + 1, 0, n);
+	}
+	// if cell is already filled
+	if (board[row][col] != 0) {
+	  return sudukoSolver(board, row, col + 1, n);
+	}
+	for (let val = 1; val <= 9; val++) {
+	  // check val is safe or not?
+	  if (isSafe(board, row, col, val, n)) {
+		board[row][col] = val;
+		// recursive call
+		let aagesolpossible = sudukoSolver(board, row, col + 1, n);
+		if (aagesolpossible) {
+		  return true;
+		} 
+		// backtracking
+		board[row][col] = 0;
+	  }
+	}
+	return false;
+  }
+  
+  
+  
